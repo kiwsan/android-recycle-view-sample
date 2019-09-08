@@ -4,16 +4,16 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 
-class TodoAdapter(context: Context, items: ArrayList<TodoSection>) :
+class TodoAdapter(context: Context, items: ArrayList<TodoModel>?) :
     RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
 
-    private val items: ArrayList<TodoSection>?
+    private val items: ArrayList<TodoModel>?
     private val context: Context
 
     init {
@@ -24,9 +24,7 @@ class TodoAdapter(context: Context, items: ArrayList<TodoSection>) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
         val view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_todo, null)
 
-        val item = TodoViewHolder(view)
-
-        return item
+        return TodoViewHolder(view)
     }
 
     override fun getItemCount(): Int {
@@ -38,26 +36,26 @@ class TodoAdapter(context: Context, items: ArrayList<TodoSection>) :
     }
 
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
-        val name = items?.get(position)?.headerTitle
-        val sections = items?.get(position)?.items
+        val title = items?.get(position)?.title
+        val imageUrl = items?.get(position)?.imageUrl
 
+        holder.todoTitle.text = title
 
-
-        holder.title.text = name
-        holder.btnMore.setOnClickListener {
-            Toast.makeText(context, name, Toast.LENGTH_SHORT).show()
-        }
+        Glide.with(context)
+            .load(imageUrl)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .centerCrop()
+            .error(android.R.drawable.ic_menu_report_image)
+            .into(holder.todoImage)
     }
 
     inner class TodoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var title: TextView
-        var recyclerView: RecyclerView
-        var btnMore: Button
+        var todoTitle: TextView
+        var todoImage: ImageView
 
         init {
-            this.title = view.findViewById(R.id.title) as TextView
-            this.recyclerView = view.findViewById(R.id.recyclerViewTodo) as RecyclerView
-            this.btnMore = view.findViewById(R.id.btnMore) as Button
+            this.todoTitle = view.findViewById(R.id.todoTitle) as TextView
+            this.todoImage = view.findViewById(R.id.todoImage) as ImageView
         }
     }
 
